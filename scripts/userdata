@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd /home/ec2-user
+touch log.txt
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm 2>>log.txt 
+sudo yum -y install ./google-chrome-stable_current_x86_64.rpm 2>>log.txt 
+pip3 install selenium 2>>log.txt  
+pip3 install boto3 2>>log.txt 
+pip3 install chromedriver-autoinstaller 2>>log.txt 
+aws s3api get-object --bucket botscripts 2231 --key bot.py bot.py 2>>log.txt 
+chmod 700 bot.py
+
+#Create cronjob to execute bot every 10 mins
+command='python3 bot.py'
+job='*/10 * * * * $command'
+cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
